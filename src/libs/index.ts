@@ -1,1 +1,1 @@
-export * from "./zod-swagger.lib.js";
+export * from "./zod.lib.js";
