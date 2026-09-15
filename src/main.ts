@@ -9,10 +9,17 @@ import { type AllConfigs } from "./infrastructure/index.js";
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
   application.useGlobalPipes(new ZodValidationPipe());
-  const configService = application.get<ConfigService<AllConfigs>>
-  const protocol: string = "http";
-  const host: string = "localhost";
-  const port: number = 3000;
+  const configService =
+    application.get<ConfigService<AllConfigs>>(ConfigService);
+  const protocol: string = configService.getOrThrow("http.protocol", {
+    infer: true,
+  });
+  const host: string = configService.getOrThrow("http.host", {
+    infer: true,
+  });
+  const port: number = configService.getOrThrow("http.port", {
+    infer: true,
+  });
   const url: string = `${protocol}://${host}:${port}`;
   const swaggerPath: string = "swagger";
   const swaggerUrl: string = `${url}/${swaggerPath}`;
