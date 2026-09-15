@@ -1,16 +1,38 @@
-import { Body, Controller, Delete, Get, Post, Put } from "@nestjs/common";
-import { type LoginDto, type RegisterDto } from "../../libs/index.js";
-import { AUTHORIZATION_CONTROLLER } from "@sorokchat-messenger/contracts";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Post,
+  Put,
+} from "@nestjs/common";
+import {
+  AUTHORIZATION_CONTROLLER,
+  type LoginPayload,
+  LoginSchema,
+  type RegisterPayload,
+  RegisterSchema,
+} from "@sorokchat-messenger/contracts";
+import { AUTHORIZATION_SERVICE_TOKEN } from "../../infrastructure/index.js";
+import { type AuthorizationServiceClient } from "@sorokchat-messenger/microservices";
 
 @Controller(AUTHORIZATION_CONTROLLER.NAME)
 export class AuthorizationController {
+  public constructor(
+    @Inject(AUTHORIZATION_SERVICE_TOKEN)
+    private readonly service: AuthorizationServiceClient,
+  ) {}
+
   @Post(AUTHORIZATION_CONTROLLER.REGISTER)
-  public async register(@Body() payload: RegisterDto) {
-    return payload;
+  public async register(
+    @Body({ schema: RegisterSchema }) payload: RegisterPayload,
+  ) {
+    return this.service.register(payload);
   }
 
   @Post(AUTHORIZATION_CONTROLLER.LOGIN)
-  public async login(@Body() payload: LoginDto) {
+  public async login(@Body({ schema: LoginSchema }) payload: LoginPayload) {
     return payload;
   }
 
