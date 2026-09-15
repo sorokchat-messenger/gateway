@@ -3,10 +3,13 @@ import { AppModule } from "./modules/index.js";
 import { Logger } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nest-swagger-zod";
+import { ConfigService } from "@nestjs/config";
+import { type AllConfigs } from "./infrastructure/index.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
   application.useGlobalPipes(new ZodValidationPipe());
+  const configService = application.get<ConfigService<AllConfigs>>
   const protocol: string = "http";
   const host: string = "localhost";
   const port: number = 3000;
