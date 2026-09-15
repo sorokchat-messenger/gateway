@@ -1,11 +1,23 @@
 import { Inject, type NestMiddleware } from "@nestjs/common";
 import { type Response, type Request, type NextFunction } from "express";
 import { AUTHORIZATION_SERVICE_TOKEN } from "../../infrastructure/index.js";
-import { type AuthorizationServiceClient } from "@sorokchat-messenger/microservices";
+import {
+  type AuthorizationServiceClient,
+  ProfileResponse,
+} from "@sorokchat-messenger/microservices";
 import { lastValueFrom } from "rxjs";
-import { GrpcException } from "@nestjs/microservices";
 import { ServiceError } from "@grpc/grpc-js";
 import { AuthorizationCodes } from "@sorokchat-messenger/contracts";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: ProfileResponse;
+    }
+  }
+}
+
+// ... решта коду
 
 export class AccessTokenMiddleware implements NestMiddleware {
   private static readonly BEARER_PREFIX: string = "Bearer ";
