@@ -33,7 +33,7 @@ export class AuthorizationController {
 
   @Post(AUTHORIZATION_CONTROLLER.LOGIN)
   public async login(@Body({ schema: LoginSchema }) payload: LoginPayload) {
-    return payload;
+    return this.service.login(payload);
   }
 
   @Delete(AUTHORIZATION_CONTROLLER.LOGOUT)

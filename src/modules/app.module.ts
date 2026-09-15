@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { AuthorizationModule } from "./authorization/authorization.module.js";
 import { ConfigModule } from "@nestjs/config";
 import {
   getConfigOptions,
   MicroservicesModule,
 } from "../infrastructure/index.js";
+import { AccessTokenMiddleware } from "./authorization/access-token.middleware.js";
 
 @Module({
   imports: [
@@ -13,4 +14,8 @@ import {
     AuthorizationModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AccessTokenMiddleware).forRoutes("*");
+  }
+}
