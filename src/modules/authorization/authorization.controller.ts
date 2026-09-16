@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Post,
   Put,
@@ -24,10 +26,19 @@ import {
 } from "@sorokchat-messenger/microservices";
 import { type Response } from "express";
 import { lastValueFrom } from "rxjs";
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiHeaders,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
 
+@ApiTags("Авторизація")
 @Controller(AUTHORIZATION_CONTROLLER.NAME)
 export class AuthorizationController {
   public constructor(
@@ -35,7 +46,30 @@ export class AuthorizationController {
     private readonly service: AuthorizationServiceClient,
   ) {}
 
+  @ApiOperation({
+    summary: "Реєстрація",
+    description: "Створення та авторизація користувача у системі",
+  })
+  @ApiBody({
+    description: "Данні для реєстрації",
+    required: true,
+    examples: {
+      default: {
+        summary: "Приклад реєстраційних данних",
+        value: {
+          login: "andrey",
+          password: "<PASSWORD>",
+          displayName: "Сороковський Андрій",
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({
+    description: "Успішна реєстрація",
+    example: { accessToken: "<TOKEN>" },
+  })
   @Post(AUTHORIZATION_CONTROLLER.REGISTER)
+  @HttpCode(HttpStatus.CREATED)
   public async register(
     @Body({ schema: RegisterSchema }) payload: RegisterPayload,
     @Res({ passthrough: true }) response: Response,

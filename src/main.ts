@@ -33,6 +33,7 @@ async function bootstrap() {
     .setDescription("Gateway service for srokchat microservices")
     .setVersion("1.0")
     .build();
+
   const documentOptions: SwaggerDocumentOptions = {
     standardSchemaConverter: (schema, { schemaType }) => {
       const converted = createSchema(schema as never, {

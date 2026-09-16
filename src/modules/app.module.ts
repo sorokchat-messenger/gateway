@@ -5,7 +5,6 @@ import {
   getConfigOptions,
   MicroservicesModule,
 } from "../infrastructure/index.js";
-import { AccessTokenMiddleware } from "./authorization/access-token.middleware.js";
 
 @Module({
   imports: [
@@ -14,8 +13,4 @@ import { AccessTokenMiddleware } from "./authorization/access-token.middleware.j
     AuthorizationModule,
   ],
 })
-export class AppModule implements NestModule {
-  public configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AccessTokenMiddleware).forRoutes("*");
-  }
-}
+export class AppModule {}
