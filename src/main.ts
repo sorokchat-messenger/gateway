@@ -39,7 +39,7 @@ async function bootstrap() {
       console.log("Converter called for:", schemaType, schema);
       const converted = createSchema(schema as never, {
         io: schemaType,
-        openapiVersion: "3.1.0",
+        openapiVersion: "3.2.0",
       });
       return { schema: converted.schema, components: converted.components };
     },
