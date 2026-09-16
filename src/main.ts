@@ -36,7 +36,6 @@ async function bootstrap() {
 
   const documentOptions: SwaggerDocumentOptions = {
     standardSchemaConverter: (schema, { schemaType }) => {
-      console.log("Converter called for:", schemaType, schema);
       const converted = createSchema(schema as never, {
         io: schemaType,
         openapiVersion: "3.2.0",
