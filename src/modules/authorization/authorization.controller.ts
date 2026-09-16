@@ -26,14 +26,7 @@ import {
 } from "@sorokchat-messenger/microservices";
 import { type Response } from "express";
 import { lastValueFrom } from "rxjs";
-import {
-  ApiBody,
-  ApiCreatedResponse,
-  ApiHeader,
-  ApiHeaders,
-  ApiOperation,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
@@ -49,20 +42,6 @@ export class AuthorizationController {
   @ApiOperation({
     summary: "Реєстрація",
     description: "Створення та авторизація користувача у системі",
-  })
-  @ApiBody({
-    description: "Данні для реєстрації",
-    required: true,
-    examples: {
-      default: {
-        summary: "Приклад реєстраційних данних",
-        value: {
-          login: "andrey",
-          password: "<PASSWORD>",
-          displayName: "Сороковський Андрій",
-        },
-      },
-    },
   })
   @ApiCreatedResponse({
     description: "Успішна реєстрація",

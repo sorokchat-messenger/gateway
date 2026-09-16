@@ -30,7 +30,7 @@
     "@nestjs/platform-express": "^12.0.1",
     "@nestjs/swagger": "^12.0.1",
     "@sorokchat-messenger/config": "^1.0.5",
-    "@sorokchat-messenger/contracts": "^1.0.5",
+    "@sorokchat-messenger/contracts": "^1.0.6",
     "@sorokchat-messenger/microservices": "^1.0.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

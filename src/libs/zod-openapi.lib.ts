@@ -14,7 +14,7 @@ function createOpenapiSchema(
 ): ConvertedSchema {
   const { schema: resultSchema, components } = createSchema(schema, {
     io,
-    openapiVersion: "3.2.0",
+    openapiVersion: "3.1.1",
   });
   return {
     schema: resultSchema as SchemaObject | ReferenceObject,
