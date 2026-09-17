@@ -17,7 +17,10 @@ import {
   type RegisterPayload,
   RegisterSchema,
 } from "@sorokchat-messenger/contracts";
-import { AUTHORIZATION_SERVICE_TOKEN } from "../../infrastructure/index.js";
+import {
+  AUTHORIZATION_SERVICE_TOKEN,
+  type RefreshTokenConfig,
+} from "../../infrastructure/index.js";
 import {
   type LoginResponse,
   type RefreshTokensResponse,
@@ -27,6 +30,8 @@ import {
 import { type Response } from "express";
 import { lastValueFrom } from "rxjs";
 import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { REFRESH_TOKEN_TOKEN } from "./refresh-token.provider.js";
+import { CookiesService } from "../cookies/cookies.service.js";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
@@ -37,6 +42,9 @@ export class AuthorizationController {
   public constructor(
     @Inject(AUTHORIZATION_SERVICE_TOKEN)
     private readonly service: AuthorizationServiceClient,
+    @Inject(REFRESH_TOKEN_TOKEN)
+    private readonly refreshTokensOptions: RefreshTokenConfig,
+    private readonly cookieService: CookiesService,
   ) {}
 
   @ApiOperation({
@@ -79,13 +87,12 @@ export class AuthorizationController {
     { accessToken, refreshToken }: AuthorizationPayload,
     response: Response,
   ): { accessToken: string } {
-    response.cookie("__Host-", refreshToken, {
-      domain: undefined,
-      path: "/",
-      secure: true,
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+    this.cookieService.setCookie(
+      this.refreshTokensOptions.cookieName,
+      refreshToken,
+      this.refreshTokensOptions.maxAge,
+      response,
+    );
     return { accessToken };
   }
 }

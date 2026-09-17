@@ -17,8 +17,6 @@ declare global {
   }
 }
 
-// ... решта коду
-
 export class AccessTokenMiddleware implements NestMiddleware {
   private static readonly BEARER_PREFIX: string = "Bearer ";
 
