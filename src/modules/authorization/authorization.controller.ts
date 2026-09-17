@@ -44,6 +44,7 @@ import { CookiesService } from "../cookies/cookies.service.js";
 import { CurrentUser } from "./current-user.decorator.js";
 import { Protected } from "./protected.decorator.js";
 import { AuthorizedOpenapiSchema } from "../../libs/index.js";
+import { Anonymous } from "./anonymous.decorator.js";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
@@ -67,6 +68,7 @@ export class AuthorizationController {
     description: "Успішна реєстрація",
     schema: AuthorizedOpenapiSchema.schema as SchemaObject,
   })
+  @Anonymous()
   @Post(AUTHORIZATION_CONTROLLER.REGISTER)
   @HttpCode(HttpStatus.CREATED)
   public async register(
@@ -77,8 +79,9 @@ export class AuthorizationController {
     return this.authorize(result, response);
   }
 
+  @Anonymous()
   @Post(AUTHORIZATION_CONTROLLER.LOGIN)
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     description: "Успішний вхід",
     schema: AuthorizedOpenapiSchema.schema as SchemaObject,
@@ -102,12 +105,14 @@ export class AuthorizationController {
   }
 
   @Put(AUTHORIZATION_CONTROLLER.REFRESH_TOKENS)
+  @Anonymous()
   public async refreshTokens(@Req() request: Request) {
     const refreshToken = this.cookieService.getCookie(
       this.refreshTokensOptions.cookieName,
       request,
     );
-    if (refreshToken) return this.service.refreshTokens({ refreshToken });
+    if (refreshToken)
+      return await lastValueFrom(this.service.refreshTokens({ refreshToken }));
     throw new UnauthorizedException(AuthorizationCodes.BAD_CREDENTIALS);
   }
 
