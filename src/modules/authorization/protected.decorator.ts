@@ -1,4 +1,9 @@
-import { UseGuards } from "@nestjs/common";
-import { ProtectedGuard } from "./protected.guard.js";
+import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common";
+import { PROTECTED_ROLES, ProtectedGuard } from "./protected.guard.js";
+import { Role } from "@sorokchat-messenger/contracts";
 
-export const Protected = () => UseGuards(ProtectedGuard);
+export const Protected = (...roles: Role[]) =>
+  applyDecorators(
+    SetMetadata(PROTECTED_ROLES, roles),
+    UseGuards(ProtectedGuard),
+  );
