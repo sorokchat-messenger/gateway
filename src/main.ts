@@ -3,12 +3,15 @@ import { AppModule } from "./modules/index.js";
 import { Logger, StandardSchemaValidationPipe } from "@nestjs/common";
 import {
   DocumentBuilder,
+  type ReferenceObject,
+  type SchemaObject,
   type SwaggerDocumentOptions,
   SwaggerModule,
 } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import { type AllConfigs } from "./infrastructure/index.js";
 import { createSchema } from "zod-openapi";
+import { AuthorizedOpenapiSchema } from "./libs/index.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
@@ -29,7 +32,7 @@ async function bootstrap() {
   const swaggerUrl: string = `${url}/${swaggerPath}`;
   const logger = new Logger();
   const config = new DocumentBuilder()
-    .setTitle("Sorokchat messenger")
+    .setTitle("Sorokchat messenger API")
     .setDescription("Gateway service for srokchat microservices")
     .setVersion("1.0")
     .build();
@@ -43,8 +46,26 @@ async function bootstrap() {
       return { schema: converted.schema, components: converted.components };
     },
   };
-  const documentFactory = () =>
-    SwaggerModule.createDocument(application, config, documentOptions);
+  const documentFactory = () => {
+    const document = SwaggerModule.createDocument(
+      application,
+      config,
+      documentOptions,
+    );
+
+    document.components = {
+      ...document.components,
+      schemas: {
+        ...document.components?.schemas,
+        ...(AuthorizedOpenapiSchema.components as Record<
+          string,
+          SchemaObject | ReferenceObject
+        >),
+      },
+    };
+
+    return document;
+  };
   SwaggerModule.setup(swaggerPath, application, documentFactory);
   await application.listen(port, () => {
     logger.log(`HTTP Gateway service run on ${url}`);
