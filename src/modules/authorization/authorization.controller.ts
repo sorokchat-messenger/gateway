@@ -8,10 +8,13 @@ import {
   Inject,
   Post,
   Put,
+  Req,
   Res,
+  UnauthorizedException,
 } from "@nestjs/common";
 import {
   AUTHORIZATION_CONTROLLER,
+  AuthorizationCodes,
   type LoginPayload,
   LoginSchema,
   type RegisterPayload,
@@ -26,12 +29,14 @@ import {
   type RefreshTokensResponse,
   type AuthorizationServiceClient,
   type RegisterResponse,
+  type ProfileResponse,
 } from "@sorokchat-messenger/microservices";
-import { type Response } from "express";
+import { response, type Request, type Response } from "express";
 import { lastValueFrom } from "rxjs";
 import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { REFRESH_TOKEN_TOKEN } from "./refresh-token.provider.js";
 import { CookiesService } from "../cookies/cookies.service.js";
+import { CurrentUser } from "./current-user.decorator.js";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
@@ -75,13 +80,28 @@ export class AuthorizationController {
   }
 
   @Delete(AUTHORIZATION_CONTROLLER.LOGOUT)
-  public async logout() {}
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async logout(@Res({ passthrough: true }) response: Response) {
+    this.cookieService.clearCookie(
+      this.refreshTokensOptions.cookieName,
+      response,
+    );
+  }
 
   @Put(AUTHORIZATION_CONTROLLER.REFRESH_TOKENS)
-  public async refreshTokens() {}
+  public async refreshTokens(@Req() request: Request) {
+    const refreshToken = this.cookieService.getCookie(
+      this.refreshTokensOptions.cookieName,
+      request,
+    );
+    if (refreshToken) return this.service.refreshTokens({ refreshToken });
+    throw new UnauthorizedException(AuthorizationCodes.BAD_CREDENTIALS);
+  }
 
   @Get(AUTHORIZATION_CONTROLLER.PROFILE)
-  public async profile() {}
+  public async profile(@CurrentUser() user: ProfileResponse) {
+    return user;
+  }
 
   private authorize(
     { accessToken, refreshToken }: AuthorizationPayload,

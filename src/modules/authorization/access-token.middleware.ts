@@ -12,7 +12,7 @@ import { AuthorizationCodes } from "@sorokchat-messenger/contracts";
 declare global {
   namespace Express {
     interface Request {
-      user?: ProfileResponse;
+      user: ProfileResponse;
     }
   }
 }
