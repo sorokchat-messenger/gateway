@@ -37,6 +37,7 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { REFRESH_TOKEN_TOKEN } from "./refresh-token.provider.js";
 import { CookiesService } from "../cookies/cookies.service.js";
 import { CurrentUser } from "./current-user.decorator.js";
+import { Protected } from "./protected.decorator.js";
 
 type AuthorizationPayload =
   RegisterResponse | LoginResponse | RefreshTokensResponse;
@@ -71,6 +72,7 @@ export class AuthorizationController {
   }
 
   @Post(AUTHORIZATION_CONTROLLER.LOGIN)
+  @HttpCode(HttpStatus.CREATED)
   public async login(
     @Body({ schema: LoginSchema }) payload: LoginPayload,
     @Res({ passthrough: true }) response: Response,
@@ -81,6 +83,7 @@ export class AuthorizationController {
 
   @Delete(AUTHORIZATION_CONTROLLER.LOGOUT)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Protected()
   public async logout(@Res({ passthrough: true }) response: Response) {
     this.cookieService.clearCookie(
       this.refreshTokensOptions.cookieName,
@@ -99,6 +102,7 @@ export class AuthorizationController {
   }
 
   @Get(AUTHORIZATION_CONTROLLER.PROFILE)
+  @Protected()
   public async profile(@CurrentUser() user: ProfileResponse) {
     return user;
   }
