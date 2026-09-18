@@ -41,6 +41,7 @@ import { Protected } from "./protected.decorator.js";
 import {
   LoginOperation,
   LogoutOperation,
+  ProfileOperation,
   RefreshTokensOperations,
   RegisterOperation,
 } from "../../libs/index.js";
@@ -109,6 +110,7 @@ export class AuthorizationController {
     throw new UnauthorizedException(AuthorizationCodes.BAD_CREDENTIALS);
   }
 
+  @ProfileOperation()
   @Protected()
   @Get(AUTHORIZATION_CONTROLLER.PROFILE)
   @HttpCode(HttpStatus.OK)

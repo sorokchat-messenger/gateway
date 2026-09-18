@@ -16,6 +16,7 @@ import {
   ErrorOpenapiSchema,
   LoginOpenapiSchema,
   RegisterOpenapiSchema,
+  UserOpenapiSchema,
 } from "./libs/index.js";
 
 async function bootstrap() {
@@ -53,6 +54,7 @@ async function bootstrap() {
         ...LoginOpenapiSchema.components,
         ...AuthorizedOpenapiSchema.components,
         ...ErrorOpenapiSchema.components,
+        ...UserOpenapiSchema.components,
       },
     };
 
