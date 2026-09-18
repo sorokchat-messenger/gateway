@@ -18,10 +18,12 @@ import {
   RegisterOpenapiSchema,
   UserOpenapiSchema,
 } from "./libs/index.js";
+import { GlobalExceptionFilter } from "./global-exception.filter.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
   application.useGlobalPipes(new StandardSchemaValidationPipe());
+  application.useGlobalFilters(new GlobalExceptionFilter());
   const configService =
     application.get<ConfigService<AllConfigs>>(ConfigService);
   const protocol: string = configService.getOrThrow("http.protocol", {
