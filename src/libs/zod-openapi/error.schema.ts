@@ -1,7 +1,4 @@
 import { ErrorSchema } from "@sorokchat-messenger/contracts";
-import { createSchema } from "zod-openapi";
+import { createOutputSchema } from "./output-schema.factory.js";
 
-export const ErrorOpenapiSchema: ReturnType<typeof createSchema> = createSchema(
-  ErrorSchema,
-  { io: "output" },
-);
+export const ErrorOpenapiSchema = createOutputSchema(ErrorSchema);

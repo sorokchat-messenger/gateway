@@ -11,7 +11,12 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { type AllConfigs } from "./infrastructure/index.js";
 import { createSchema } from "zod-openapi";
-import { AuthorizedOpenapiSchema } from "./libs/index.js";
+import {
+  AuthorizedOpenapiSchema,
+  ErrorOpenapiSchema,
+  LoginOpenapiSchema,
+  RegisterOpenapiSchema,
+} from "./libs/index.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
@@ -37,30 +42,17 @@ async function bootstrap() {
     .setVersion("1.0")
     .build();
 
-  const documentOptions: SwaggerDocumentOptions = {
-    standardSchemaConverter: (schema, { schemaType }) => {
-      const converted = createSchema(schema as never, {
-        io: schemaType,
-        openapiVersion: "3.2.0",
-      });
-      return { schema: converted.schema, components: converted.components };
-    },
-  };
   const documentFactory = () => {
-    const document = SwaggerModule.createDocument(
-      application,
-      config,
-      documentOptions,
-    );
+    const document = SwaggerModule.createDocument(application, config);
 
     document.components = {
       ...document.components,
       schemas: {
         ...document.components?.schemas,
-        ...(AuthorizedOpenapiSchema.components as Record<
-          string,
-          SchemaObject | ReferenceObject
-        >),
+        ...RegisterOpenapiSchema.components,
+        ...LoginOpenapiSchema.components,
+        ...AuthorizedOpenapiSchema.components,
+        ...ErrorOpenapiSchema.components,
       },
     };
 
