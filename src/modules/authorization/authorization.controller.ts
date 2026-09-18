@@ -38,7 +38,12 @@ import { REFRESH_TOKEN_TOKEN } from "./refresh-token.provider.js";
 import { CookiesService } from "../cookies/cookies.service.js";
 import { CurrentUser } from "./current-user.decorator.js";
 import { Protected } from "./protected.decorator.js";
-import { LoginOperation, RegisterOperation } from "../../libs/index.js";
+import {
+  LoginOperation,
+  LogoutOperation,
+  RefreshTokensOperations,
+  RegisterOperation,
+} from "../../libs/index.js";
 import { Anonymous } from "./anonymous.decorator.js";
 
 type AuthorizationPayload =
@@ -79,9 +84,10 @@ export class AuthorizationController {
     return this.authorize(result, response);
   }
 
+  @LogoutOperation()
+  @Protected()
   @Delete(AUTHORIZATION_CONTROLLER.LOGOUT)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Protected()
   public async logout(@Res({ passthrough: true }) response: Response) {
     this.cookieService.clearCookie(
       this.refreshTokensOptions.cookieName,
@@ -89,8 +95,10 @@ export class AuthorizationController {
     );
   }
 
-  @Put(AUTHORIZATION_CONTROLLER.REFRESH_TOKENS)
+  @RefreshTokensOperations()
   @Anonymous()
+  @Put(AUTHORIZATION_CONTROLLER.REFRESH_TOKENS)
+  @HttpCode(HttpStatus.OK)
   public async refreshTokens(@Req() request: Request) {
     const refreshToken = this.cookieService.getCookie(
       this.refreshTokensOptions.cookieName,
@@ -101,8 +109,9 @@ export class AuthorizationController {
     throw new UnauthorizedException(AuthorizationCodes.BAD_CREDENTIALS);
   }
 
-  @Get(AUTHORIZATION_CONTROLLER.PROFILE)
   @Protected()
+  @Get(AUTHORIZATION_CONTROLLER.PROFILE)
+  @HttpCode(HttpStatus.OK)
   public async profile(@CurrentUser() user: ProfileResponse) {
     return user;
   }
