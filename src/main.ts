@@ -43,6 +43,7 @@ async function bootstrap() {
     .setTitle("Sorokchat messenger API")
     .setDescription("Gateway service for srokchat microservices")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
 
   const documentFactory = () => {

@@ -3,11 +3,13 @@ import { type Response, type Request, type NextFunction } from "express";
 import { AUTHORIZATION_SERVICE_TOKEN } from "../../infrastructure/index.js";
 import {
   type AuthorizationServiceClient,
+  GrpcStatus,
   ProfileResponse,
 } from "@sorokchat-messenger/microservices";
 import { lastValueFrom } from "rxjs";
 import { ServiceError } from "@grpc/grpc-js";
 import { AuthorizationCodes } from "@sorokchat-messenger/contracts";
+import { RpcException } from "@nestjs/microservices";
 
 declare global {
   namespace Express {
@@ -43,8 +45,8 @@ export class AccessTokenMiddleware implements NestMiddleware {
       return next();
     } catch (error) {
       if (
-        this.isGrpcServiceError(error) &&
-        error.details === AuthorizationCodes.BAD_CREDENTIALS
+        this.isGrpcError(error) &&
+        error.details === AuthorizationCodes.UNAUTHORIZED
       ) {
         return next();
       }
@@ -52,12 +54,16 @@ export class AccessTokenMiddleware implements NestMiddleware {
     }
   }
 
-  private isGrpcServiceError(error: unknown): error is ServiceError {
+  private isGrpcError(
+    error: unknown,
+  ): error is { code: GrpcStatus; details: string } {
     return (
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
-      typeof (error as { code: unknown }).code === "number"
+      typeof error.code === "number" &&
+      "details" in error &&
+      typeof error.details === "string"
     );
   }
 }

@@ -26,8 +26,8 @@ export class ProtectedGuard implements CanActivate {
     const neededRoles = this.reflector.getAllAndOverride<Role[]>(
       PROTECTED_ROLES,
       [context.getHandler(), context.getClass()],
-    ) ?? [Role.USER];
-
+    );
+    if (neededRoles.length === 0) return true;
     const allowed: boolean = neededRoles.some((role) =>
       ROLE_HIERARCHY.hasRole(role, user.role),
     );
