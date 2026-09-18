@@ -33,17 +33,12 @@ import {
 } from "@sorokchat-messenger/microservices";
 import { type Request, type Response } from "express";
 import { lastValueFrom } from "rxjs";
-import {
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
-  SchemaObject,
-} from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
 import { REFRESH_TOKEN_TOKEN } from "./refresh-token.provider.js";
 import { CookiesService } from "../cookies/cookies.service.js";
 import { CurrentUser } from "./current-user.decorator.js";
 import { Protected } from "./protected.decorator.js";
-import { AuthorizedOpenapiSchema } from "../../libs/index.js";
+import { LoginOperation, RegisterOperation } from "../../libs/index.js";
 import { Anonymous } from "./anonymous.decorator.js";
 
 type AuthorizationPayload =
@@ -60,14 +55,7 @@ export class AuthorizationController {
     private readonly cookieService: CookiesService,
   ) {}
 
-  @ApiOperation({
-    summary: "Реєстрація",
-    description: "Створення та авторизація користувача у системі",
-  })
-  @ApiCreatedResponse({
-    description: "Успішна реєстрація",
-    schema: AuthorizedOpenapiSchema.schema as SchemaObject,
-  })
+  @RegisterOperation()
   @Anonymous()
   @Post(AUTHORIZATION_CONTROLLER.REGISTER)
   @HttpCode(HttpStatus.CREATED)
@@ -79,13 +67,10 @@ export class AuthorizationController {
     return this.authorize(result, response);
   }
 
+  @LoginOperation()
   @Anonymous()
   @Post(AUTHORIZATION_CONTROLLER.LOGIN)
   @HttpCode(HttpStatus.OK)
-  @ApiCreatedResponse({
-    description: "Успішний вхід",
-    schema: AuthorizedOpenapiSchema.schema as SchemaObject,
-  })
   public async login(
     @Body({ schema: LoginSchema }) payload: LoginPayload,
     @Res({ passthrough: true }) response: Response,
