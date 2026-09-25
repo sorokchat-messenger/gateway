@@ -3,14 +3,11 @@ import { AppModule } from "./modules/index.js";
 import { Logger, StandardSchemaValidationPipe } from "@nestjs/common";
 import {
   DocumentBuilder,
-  type ReferenceObject,
-  type SchemaObject,
-  type SwaggerDocumentOptions,
   SwaggerModule,
 } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import { type AllConfigs } from "./infrastructure/index.js";
-import { createSchema } from "zod-openapi";
+import cookieParser from 'cookie-parser';
 import {
   AuthorizedOpenapiSchema,
   ErrorOpenapiSchema,
@@ -22,6 +19,7 @@ import { GlobalExceptionFilter } from "./global-exception.filter.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
+  application.use(cookieParser);
   application.useGlobalPipes(new StandardSchemaValidationPipe());
   application.useGlobalFilters(new GlobalExceptionFilter());
   const configService =
