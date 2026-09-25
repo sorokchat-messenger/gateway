@@ -1,4 +1,4 @@
-import { Inject, type NestMiddleware } from "@nestjs/common";
+import { Inject, Logger, type NestMiddleware } from "@nestjs/common";
 import { type Response, type Request, type NextFunction } from "express";
 import { AUTHORIZATION_SERVICE_TOKEN } from "../../infrastructure/index.js";
 import {
@@ -7,9 +7,7 @@ import {
   ProfileResponse,
 } from "@sorokchat-messenger/microservices";
 import { lastValueFrom } from "rxjs";
-import { ServiceError } from "@grpc/grpc-js";
 import { AuthorizationCodes } from "@sorokchat-messenger/contracts";
-import { RpcException } from "@nestjs/microservices";
 
 declare global {
   namespace Express {
@@ -25,22 +23,26 @@ export class AccessTokenMiddleware implements NestMiddleware {
   public constructor(
     @Inject(AUTHORIZATION_SERVICE_TOKEN)
     private readonly service: AuthorizationServiceClient,
-  ) {}
+  ) { }
 
   public async use(
     request: Request,
     _response: Response,
     next: NextFunction,
   ): Promise<void> {
+    const logger = new Logger("AccessTokenMiddleware");
     const header = request.headers.authorization;
     if (!header || !header.startsWith(AccessTokenMiddleware.BEARER_PREFIX)) {
+      logger.debug("Access token not provided");
       return next();
     }
     const accessToken = header.slice(
       AccessTokenMiddleware.BEARER_PREFIX.length,
     );
+    logger.debug(`TOKEN: ${accessToken}`);
     try {
       const user = await lastValueFrom(this.service.profile({ accessToken }));
+      logger.debug(`User by login "${user.login} found"`);
       request["user"] = user;
       return next();
     } catch (error) {
@@ -48,8 +50,10 @@ export class AccessTokenMiddleware implements NestMiddleware {
         this.isGrpcError(error) &&
         error.details === AuthorizationCodes.UNAUTHORIZED
       ) {
+        logger.debug(`Profile error: ${error.code}`);
         return next();
       }
+      logger.error(`Unknown error: `, error);
       throw error;
     }
   }
