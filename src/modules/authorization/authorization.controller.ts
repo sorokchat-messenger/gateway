@@ -59,7 +59,7 @@ export class AuthorizationController {
     @Inject(REFRESH_TOKEN_TOKEN)
     private readonly refreshTokensOptions: RefreshTokenConfig,
     private readonly cookieService: CookiesService,
-  ) {}
+  ) { }
 
   @RegisterOperation()
   @Anonymous()
