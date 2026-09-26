@@ -19,7 +19,7 @@ import { GlobalExceptionFilter } from "./global-exception.filter.js";
 
 async function bootstrap() {
   const application = await NestFactory.create(AppModule);
-  application.use(cookieParser);
+  application.use(cookieParser());
   application.useGlobalPipes(new StandardSchemaValidationPipe());
   application.useGlobalFilters(new GlobalExceptionFilter());
   const configService =
