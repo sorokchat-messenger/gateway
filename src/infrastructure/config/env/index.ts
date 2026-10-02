@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { getBasicEnv } from "@sorokchat-messenger/config";
 import { getHttpEnv } from "./http.env.js";
 import { getAuthorizationEnv } from "./authorization.env.js";
