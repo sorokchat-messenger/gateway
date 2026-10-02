@@ -1,16 +1,14 @@
-import { type ServiceError } from "@grpc/grpc-js";
 import {
   type ArgumentsHost,
   BadRequestException,
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
 } from "@nestjs/common";
-import { RpcException } from "@nestjs/microservices";
 import {
   BAD_REQUEST_ERROR_CODE,
   ErrorSchema,
+  HttpStatus,
   type ErrorPayload,
 } from "@sorokchat-messenger/contracts";
 import {
@@ -38,22 +36,22 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       error = {
         message: exception.message,
-        status: exception.getStatus(),
+        status: exception.getStatus() as HttpStatus,
       };
     } else if (this.isGrpcError(exception)) {
       error = {
-        status: GrpcToHttpStatus[exception.code],
+        status: GrpcToHttpStatus[exception.code] as HttpStatus,
         message: exception.details,
       };
     } else if (exception instanceof Error) {
       error = {
-        status: GrpcToHttpStatus[GrpcStatus.INTERNAL],
+        status: GrpcToHttpStatus[GrpcStatus.INTERNAL] as HttpStatus,
         message: exception.message,
       };
     } else {
       error = {
         message: "errors.unknown",
-        status: GrpcToHttpStatus[GrpcStatus.UNKNOWN],
+        status: GrpcToHttpStatus[GrpcStatus.UNKNOWN] as HttpStatus,
       };
     }
     return response.status(error.status).json(error);
