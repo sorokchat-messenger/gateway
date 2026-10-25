@@ -13,8 +13,10 @@ import {
   ChatOpenapiSchema,
   ChatsOpenapiSchema,
   ErrorOpenapiSchema,
+  LimitOpenapiSchema,
   LoginOpenapiSchema,
   NewChatOpenapiSchema,
+  OffsetOpenapiSchema,
   RegisterOpenapiSchema,
   UpdateChatOpenapiSchema,
   UserOpenapiSchema,
@@ -63,7 +65,9 @@ async function bootstrap() {
         ...NewChatOpenapiSchema.components,
         ...ChatOpenapiSchema.components,
         ...ChatsOpenapiSchema.components,
-        ...UpdateChatOpenapiSchema.components
+        ...UpdateChatOpenapiSchema.components,
+        ...OffsetOpenapiSchema.components,
+        ...LimitOpenapiSchema.components
       },
     };
 
