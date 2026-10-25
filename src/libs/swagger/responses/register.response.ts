@@ -1,6 +1,6 @@
-import { ApiCreatedResponse, type SchemaObject } from "@nestjs/swagger";
-import { AuthorizedOpenapiSchema } from "../../zod-openapi/authorized.schema.js";
-import { applyDecorators } from "@nestjs/common";
+import { ApiConflictResponse, ApiCreatedResponse, type SchemaObject } from "@nestjs/swagger";
+import { AuthorizedOpenapiSchema, ErrorOpenapiSchema } from "../../zod-openapi/index.js";
+import { applyDecorators, ConflictException } from "@nestjs/common";
 import { AccessDeniedResponse } from "./access-denied.response.js";
 import { BadRequestResponse } from "./bad-request.response.js";
 import { UserCodes } from "@sorokchat-messenger/contracts";
@@ -12,6 +12,10 @@ export const RegisterResponse = () =>
       schema: AuthorizedOpenapiSchema.schema as SchemaObject,
     }),
     AccessDeniedResponse(),
+    ApiConflictResponse({
+      description: "Користувач вже існує",
+      schema: ErrorOpenapiSchema.schema
+    }),
     BadRequestResponse({
       login: UserCodes.LOGIN.EMPTY,
       password: UserCodes.PASSWORD.MAX_LENGTH.CODE,

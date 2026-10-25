@@ -1,16 +1,17 @@
 import { DynamicModule, Global, Module } from "@nestjs/common";
 import { createClientModule } from "@sorokchat-messenger/microservices";
-import { getAuthorizationOptions } from "../options/authorization.options.js";
-import { AUTHORIZATION_SERVICE_PROVIDER } from "./providers/authorization.provider.js";
+import { getAuthorizationOptions, getChatsOptions } from "../options/index.js";
+import { AUTHORIZATION_SERVICE_PROVIDER, CHATS_SERVICE_PROVIDER } from "./providers/index.js";
 
 const ClientsModule: DynamicModule = createClientModule([
   getAuthorizationOptions(),
+  getChatsOptions()
 ]) as DynamicModule;
 
 @Global()
 @Module({
   imports: [ClientsModule],
-  providers: [AUTHORIZATION_SERVICE_PROVIDER],
-  exports: [AUTHORIZATION_SERVICE_PROVIDER],
+  providers: [AUTHORIZATION_SERVICE_PROVIDER, CHATS_SERVICE_PROVIDER],
+  exports: [AUTHORIZATION_SERVICE_PROVIDER, CHATS_SERVICE_PROVIDER],
 })
-export class MicroservicesModule {}
+export class MicroservicesModule { }

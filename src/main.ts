@@ -10,9 +10,13 @@ import { type AllConfigs } from "./infrastructure/index.js";
 import cookieParser from 'cookie-parser';
 import {
   AuthorizedOpenapiSchema,
+  ChatOpenapiSchema,
+  ChatsOpenapiSchema,
   ErrorOpenapiSchema,
   LoginOpenapiSchema,
+  NewChatOpenapiSchema,
   RegisterOpenapiSchema,
+  UpdateChatOpenapiSchema,
   UserOpenapiSchema,
 } from "./libs/index.js";
 import { GlobalExceptionFilter } from "./global-exception.filter.js";
@@ -56,6 +60,10 @@ async function bootstrap() {
         ...AuthorizedOpenapiSchema.components,
         ...ErrorOpenapiSchema.components,
         ...UserOpenapiSchema.components,
+        ...NewChatOpenapiSchema.components,
+        ...ChatOpenapiSchema.components,
+        ...ChatsOpenapiSchema.components,
+        ...UpdateChatOpenapiSchema.components
       },
     };
 

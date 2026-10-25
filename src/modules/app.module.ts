@@ -5,12 +5,14 @@ import {
   getConfigOptions,
   MicroservicesModule,
 } from "../infrastructure/index.js";
+import { ChatsModule } from "./chats/index.js";
 
 @Module({
   imports: [
     ConfigModule.forRoot(getConfigOptions()),
     MicroservicesModule,
     AuthorizationModule,
+    ChatsModule
   ],
 })
-export class AppModule {}
+export class AppModule { }

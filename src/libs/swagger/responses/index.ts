@@ -6,3 +6,5 @@ export * from "./bad-request.response.js";
 export * from "./refresh-tokens.response.js";
 export * from "./logout.response.js";
 export * from "./profile.response.js";
+export * from './new-chat.reponse.js';
+export * from './update-chat.response.js';

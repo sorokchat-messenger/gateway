@@ -1,5 +1,5 @@
 import { ApiOkResponse, type SchemaObject } from "@nestjs/swagger";
-import { AuthorizedOpenapiSchema } from "../../zod-openapi/authorized.schema.js";
+import { AuthorizedOpenapiSchema } from "../../zod-openapi/index.js";
 import { applyDecorators } from "@nestjs/common";
 import { AccessDeniedResponse } from "./access-denied.response.js";
 import { BadRequestResponse } from "./bad-request.response.js";
