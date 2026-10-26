@@ -9,7 +9,7 @@ export const DeleteChatRequest = () => applyDecorators(
         parameters: [
             {
                 in: "path",
-                name: "id",
+                name: "chatId",
                 description: "Унікальний ідентифікатор чату",
                 schema: ChatIdOpenapiSchema.schema
             }

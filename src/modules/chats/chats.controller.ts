@@ -71,7 +71,7 @@ export class ChatsController {
     @Delete(CHATS_CONTROLLER.DELETE.PATTERN)
     @HttpCode(HttpStatus.NO_CONTENT)
     public async deleteChat(
-        @Param("id", { schema: ChatSchema.shape.id }) id: string,
+        @Param("chatId", { schema: ChatSchema.shape.id }) id: string,
         @CurrentUser("id") actorId: string
     ) {
         await lastValueFrom(this.service.deleteChat({ actorId, id }));
