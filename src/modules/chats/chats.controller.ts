@@ -68,7 +68,7 @@ export class ChatsController {
 
     @DeleteChatOperation()
     @Protected()
-    @Delete()
+    @Delete(CHATS_CONTROLLER.DELETE.PATTERN)
     @HttpCode(HttpStatus.NO_CONTENT)
     public async deleteChat(
         @Param("id", { schema: ChatSchema.shape.id }) id: string,
