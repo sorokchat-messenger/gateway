@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import {
     CHATS_CONTROLLER,
@@ -68,6 +68,7 @@ export class ChatsController {
 
     @DeleteChatOperation()
     @Protected()
+    @Delete()
     @HttpCode(HttpStatus.NO_CONTENT)
     public async deleteChat(
         @Param("id", { schema: ChatSchema.shape.id }) id: string,
