@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Inject, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Put, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import {
     CHATS_CONTROLLER,
-    ChatsPayload,
+    ChatSchema,
     type NewChatPayload,
     NewChatSchema,
     type UpdateChatPayload,
@@ -14,7 +14,8 @@ import {
     NewChatOperation,
     UpdateChatOperation,
     GetChatsByUserOperation,
-    PositiveNumberSchema
+    PositiveNumberSchema,
+    DeleteChatOperation
 } from "../../libs/index.js";
 import { lastValueFrom } from "rxjs";
 import { Protected } from "../authorization/protected.decorator.js";
@@ -31,6 +32,7 @@ export class ChatsController {
     @GetChatsByUserOperation()
     @Protected()
     @Get()
+    @HttpCode(HttpStatus.OK)
     public async getByUser(
         @CurrentUser("id") userId: string,
         @Query("limit", { schema: PositiveNumberSchema }) limit: number,
@@ -43,6 +45,7 @@ export class ChatsController {
     @NewChatOperation()
     @Protected()
     @Post(CHATS_CONTROLLER.CREATE.PATTERN)
+    @HttpCode(HttpStatus.CREATED)
     public async createChat(
         @CurrentUser('id') actorId: string,
         @Body({ schema: NewChatSchema }) payload: NewChatPayload
@@ -54,11 +57,22 @@ export class ChatsController {
     @UpdateChatOperation()
     @Protected()
     @Put(CHATS_CONTROLLER.UPDATE.PATTERN)
+    @HttpCode(HttpStatus.NO_CONTENT)
     public async updateChat(
         @CurrentUser('id') actorId: string,
         @Body({ schema: UpdateChatSchema }) payload: UpdateChatPayload,
         @Param(CHATS_CONTROLLER.UPDATE.PATTERN.replace(":", "")) id: string
     ) {
         await lastValueFrom(this.service.updateChat({ ...payload, actorId, id }));
+    }
+
+    @DeleteChatOperation()
+    @Protected()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    public async deleteChat(
+        @Param("id", { schema: ChatSchema.shape.id }) id: string,
+        @CurrentUser("id") actorId: string
+    ) {
+        await lastValueFrom(this.service.deleteChat({ actorId, id }));
     }
 }

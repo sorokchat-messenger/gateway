@@ -6,3 +6,4 @@ export * from "./profile.operation.js";
 export * from './new-chat.operation.js';
 export * from './update-chat.operation.js';
 export * from './get-chats-by-user.operation.js'
+export * from './delete-chat.operation.js';

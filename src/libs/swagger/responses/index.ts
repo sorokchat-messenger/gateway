@@ -9,3 +9,4 @@ export * from "./profile.response.js";
 export * from './new-chat.reponse.js';
 export * from './update-chat.response.js';
 export * from './get-chats-by-user.response.js'
+export * from './delete-chat.response.js';

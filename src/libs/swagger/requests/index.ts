@@ -6,3 +6,4 @@ export * from "./profile.request.js";
 export * from './new-chat.request.js';
 export * from './update-chat.request.js';
 export * from './get-chats-by-user.request.js';
+export * from './delete-chat.request.js';
