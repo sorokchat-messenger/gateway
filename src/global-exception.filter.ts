@@ -18,18 +18,6 @@ import {
 } from "@sorokchat-messenger/microservices";
 import { type Response } from "express";
 
-interface GrpcErrorShape {
-  code?: unknown;
-  status?: unknown;
-  details?: unknown;
-  message?: unknown;
-  error?: {
-    code?: unknown;
-    details?: unknown;
-    message?: unknown;
-  };
-}
-
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   public catch(exception: unknown, host: ArgumentsHost): Response {
@@ -37,10 +25,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = context.getResponse<Response>();
     let error: ErrorPayload;
     const grpcError = this.extractGrpcError(exception);
-    console.log(JSON.stringify(grpcError));
     if (grpcError) {
       const httpStatus =
-        GrpcToHttpStatus[grpcError.code] ?? GrpcToHttpStatus[GrpcStatus.UNKNOWN];
+        GrpcToHttpStatus[grpcError.code] ?? GrpcToHttpStatus[GrpcStatus.INTERNAL];
       error = {
         status: httpStatus as HttpStatus,
         message: grpcError.details,
@@ -66,33 +53,52 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else {
       error = {
         message: UNKNOWN,
-        status: GrpcToHttpStatus[GrpcStatus.UNKNOWN] as HttpStatus,
+        status: GrpcToHttpStatus[GrpcStatus.INTERNAL] as HttpStatus,
       };
     }
-    return response.status(error.status ?? 500).json(error);
+    return response.status(error.status ?? GrpcToHttpStatus[GrpcStatus.INTERNAL]).json(error);
   }
 
   private extractGrpcError(
     error: unknown,
   ): { code: GrpcStatus; details: string } | null {
-    console.log(error);
-
     if (!this.isObject(error)) {
       return null;
     }
-    const err = error as GrpcErrorShape;
-    const rawCode = err.code ?? err.error?.code ?? err.status;
-    const rawDetails = err.details;
-    if (typeof rawCode !== "number" && typeof rawCode !== "string") {
+    const err = error as Record<string, unknown>;
+    let target = err;
+    if (typeof err.getError === "function") {
+      const inner = err.getError();
+      if (this.isObject(inner)) {
+        target = inner as Record<string, unknown>;
+      }
+    }
+    let rawCode = target.code ?? target.status ?? (target.error as Record<string, unknown>)?.code;
+    let rawDetails = target.details ?? target.message ?? (target.error as Record<string, unknown>)?.details;
+
+    const detailsStr = typeof rawDetails === "string" ? rawDetails : "";
+    if ((rawCode === undefined || rawCode === null || rawCode === 2) && detailsStr) {
+      const match = detailsStr.match(/^(\d+)\s+(?:[A-Z_]+:\s*)?(.+)$/);
+      if (match) {
+        rawCode = Number(match[1]);
+        rawDetails = match[2];
+      }
+    }
+    if (rawCode === undefined || rawCode === null) {
       return null;
     }
     const code = Number(rawCode);
-    if (!isNaN(code)) {
+    if (!isNaN(code) && code >= 0 && code <= 16) {
+      const details =
+        typeof rawDetails === "string" && rawDetails !== "Rpc Exception"
+          ? rawDetails
+          : UNKNOWN;
       return {
         code: code as GrpcStatus,
-        details: typeof rawDetails === "string" ? rawDetails : UNKNOWN,
+        details,
       };
     }
+
     return null;
   }
 
