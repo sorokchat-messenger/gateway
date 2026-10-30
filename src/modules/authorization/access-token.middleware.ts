@@ -30,7 +30,7 @@ export class AccessTokenMiddleware implements NestMiddleware {
     _response: Response,
     next: NextFunction,
   ): Promise<void> {
-    const logger = new Logger("AccessTokenMiddleware");
+    const logger = new Logger(AccessTokenMiddleware.name);
     const header = request.headers.authorization;
     if (!header || !header.startsWith(AccessTokenMiddleware.BEARER_PREFIX)) {
       logger.debug("Access token not provided");
