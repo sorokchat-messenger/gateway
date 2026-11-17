@@ -45,7 +45,7 @@ async function bootstrap() {
   const logger = new Logger();
   const config = new DocumentBuilder()
     .setTitle("Sorokchat messenger API")
-    .setDescription("Gateway service for srokchat microservices")
+    .setDescription("Gateway service for sorokchat microservices")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
